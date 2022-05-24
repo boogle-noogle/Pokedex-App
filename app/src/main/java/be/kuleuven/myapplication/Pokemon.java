@@ -33,7 +33,15 @@ public class Pokemon {
     Bitmap bitmap = null;
     private int image;
     private String url;
-    private URL Url;
+    private boolean fav;
+
+    public boolean isFav() {
+        return fav;
+    }
+
+    public void setFav(boolean fav) {
+        this.fav = fav;
+    }
 
     private ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -308,6 +316,10 @@ public class Pokemon {
 
     public void setSprites(List<String> sprites) {
         this.sprites = sprites;
+    }
+
+    public Object getAverageColor() {
+        return null;
     }
 }
 

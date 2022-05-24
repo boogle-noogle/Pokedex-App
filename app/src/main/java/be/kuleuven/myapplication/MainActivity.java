@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     List<Pokemon> testList = new ArrayList<>();
     List<Pokemon> list = new ArrayList<>(30);
     RequestQueue requestQueue;
-    RecyclerView recyclerView;
+    RecyclerView recyclerView,recyclerView2;
     RecyclerViewAdapter adapter;
     Bitmap bitmap = null;
     List<String> urls = new LinkedList<>();
@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        recyclerView2 = findViewById(R.id.recyclerView2);
+        recyclerView2.setLayoutManager(new LinearLayoutManager(this));
 
         String name[] = getResources().getStringArray(R.array.name);
         String number[] = getResources().getStringArray(R.array.number);
@@ -97,13 +100,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void addFav( View view){
-        int id= getIntent().getIntExtra("id",1);
-        button =findViewById(R.id.favorite);
-        button.setBackgroundResource(R.drawable.ic_favorite);
-        RecyclerView.ViewHolder viewHolder = null;
-
-    }
 
     public void sendRequest(int i) {
         if (i < 31){
@@ -171,11 +167,13 @@ public class MainActivity extends AppCompatActivity {
         else{
             adapter = new RecyclerViewAdapter(this, list);
             new AsyncGettingBitmapFromUrl().execute(urls.toArray(new String[0]));
-            //recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(adapter);
         }
     }
     public void setAdapt(View view){
-        recyclerView.setAdapter(adapter);
+        List<Pokemon> favList = adapter.getFavList();
+        RecyclerViewAdapter adapter2 = new RecyclerViewAdapter(this, favList);
+        recyclerView2.setAdapter(adapter2);
     }
 
     private class AsyncGettingBitmapFromUrl extends AsyncTask<String, Void, Void> {
@@ -204,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 list.get(i).setBitmap(Pokemon.downloadImage(params[i]));
                 System.out.println("bitmap" + bitmap);
             }
-                return null;
+            return null;
         }
 
         //@Override
@@ -220,4 +218,4 @@ public class MainActivity extends AppCompatActivity {
             //sendRequest();
         }
 
-}}
+    }}

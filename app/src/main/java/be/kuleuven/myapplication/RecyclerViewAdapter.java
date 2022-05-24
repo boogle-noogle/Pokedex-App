@@ -2,9 +2,11 @@ package be.kuleuven.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
@@ -24,11 +26,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     Context context;
     List<Pokemon> list;
     List<Pokemon> listFull;
+    List<Pokemon> favList;
 
     public RecyclerViewAdapter(Context context, List<Pokemon> list) {
         this.context = context;
         this.list = list;
         listFull=new ArrayList<>(list);
+        favList = new ArrayList<>();
     }
 
     @NonNull
@@ -38,13 +42,35 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return new MyViewHolder(view);
     }
 
-
+    //database is 106
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.MyViewHolder holder,  int position) {
         //holder.profileImage.setImageResource(list.get(holder.getAdapterPosition()).getImage());
         holder.profileImage.setImageBitmap(list.get(holder.getAdapterPosition()).getBitmap());
         holder.name.setText(list.get(holder.getAdapterPosition()).getName());
         holder.number.setText(list.get(holder.getAdapterPosition()).getNumber());
+
+        holder.fav.setOnClickListener(view -> {
+            Pokemon current = list.get(holder.getAdapterPosition());
+            if(current.isFav()) {
+                current.setFav(false);
+                if(favList.contains(current) && current != null);{
+                    favList.remove(current);
+                    System.out.println(current.getName()+" removed");
+                    holder.fav.setBackgroundResource(R.drawable.ic_unfavorite);
+                }
+            }else{
+                if ( current != null) {
+                    current.setFav(true);
+                }
+                favList.add(current);
+                System.out.println(current.getName()+" added");
+                holder.fav.setBackgroundResource(R.drawable.ic_favorite);
+
+            }
+
+        });
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,11 +88,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 intent.putExtra("stat5",list.get(holder.getAdapterPosition()).getStat5());
                 intent.putExtra("weight",list.get(holder.getAdapterPosition()).getWeight());
                 intent.putExtra("height",list.get(holder.getAdapterPosition()).getHeight());
+                intent.putExtra("color", (Parcelable) list.get(holder.getAdapterPosition()).getAverageColor());
+
 
                 context.startActivity(intent);
             }
         });
 
+
+    }
+
+    public List<Pokemon> getFavList() {
+        return favList;
     }
 
     @Override
@@ -112,6 +145,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView name, number;
         TextView stat0,stat1,stat2,stat3,stat4,stat5;
         TextView height, weight;
+        Button fav;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             profileImage=itemView.findViewById(R.id.profileImage);
@@ -125,6 +159,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             stat5=itemView.findViewById(R.id.stat5);
             weight=itemView.findViewById(R.id.weight);
             height=itemView.findViewById(R.id.height);
+            fav = itemView.findViewById(R.id.favorite);
         }
     }
 }
