@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -55,28 +56,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView2 = findViewById(R.id.recyclerView2);
         recyclerView2.setLayoutManager(new LinearLayoutManager(this));
 
-        String name[] = getResources().getStringArray(R.array.name);
-        String number[] = getResources().getStringArray(R.array.number);
-        int image[] = {R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e, R.drawable.f, R.drawable.g, R.drawable.h, R.drawable.i, R.drawable.j};
-
-
-        for (int i = 0; i < name.length; i++) {
-
-            Pokemon pokemon = new Pokemon(name[i],
-                    number[i],
-                    BitmapFactory.decodeResource(this.getResources(),
-                            image[i]));
-            testList.add(pokemon);
-        }
-//        adapter = new RecyclerViewAdapter(this,testList);
         sendRequest(1);
-        //new AsyncGettingBitmapFromUrl().onPostExecute(bitmaps);
-
-        //list.addAll(testList);
-
-
-
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -170,10 +152,13 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
         }
     }
-    public void setAdapt(View view){
+    public void toFav(View view){
         List<Pokemon> favList = adapter.getFavList();
         RecyclerViewAdapter adapter2 = new RecyclerViewAdapter(this, favList);
         recyclerView2.setAdapter(adapter2);
+
+        Intent intent = new Intent(this, FavActivity.class);
+        this.startActivity(intent);
     }
 
     private class AsyncGettingBitmapFromUrl extends AsyncTask<String, Void, Void> {

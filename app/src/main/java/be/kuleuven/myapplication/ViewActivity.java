@@ -20,17 +20,17 @@ public class ViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
-        imageView=findViewById(R.id.otherProfileImage);
-        Name=findViewById(R.id.textView3);
+        imageView=findViewById(R.id.image1);
+        Name=findViewById(R.id.id1);
         stat00=findViewById(R.id.stat0);
         stat10=findViewById(R.id.stat1);
         stat20=findViewById(R.id.stat2);
         stat30=findViewById(R.id.stat3);
         stat40=findViewById(R.id.stat4);
         stat50=findViewById(R.id.stat5);
-        Number = findViewById(R.id.number);
-        weight0=findViewById(R.id.weight);
-        height0=findViewById(R.id.height);
+        Number = findViewById(R.id.number1);
+        weight0=findViewById(R.id.weight1);
+        height0=findViewById(R.id.height1);
 
         int image = getIntent().getIntExtra("image", 1);
 

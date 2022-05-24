@@ -69,11 +69,25 @@
                 android:layout_height="50dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/ic_unfavorite"
+                android:onClick="addFav"
                 android:outlineAmbientShadowColor="@color/black"
+                android:outlineSpotShadowColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:onClick="addFav"/>
+                tools:ignore="SpeakableTextPresentCheck" />
+
+            <Button
+                android:id="@+id/compare"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/ic_compare"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/favorite"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="SpeakableTextPresentCheck"
+                android:backgroundTint="@color/black"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

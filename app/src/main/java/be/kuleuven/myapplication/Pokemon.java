@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -16,7 +18,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Pokemon {
+public class Pokemon implements Parcelable {
 
     private String name;
     private String id;
@@ -34,6 +36,42 @@ public class Pokemon {
     private int image;
     private String url;
     private boolean fav;
+
+    protected Pokemon(Parcel in) {
+        name = in.readString();
+        id = in.readString();
+        type1 = in.readString();
+        type2 = in.readString();
+        xp = in.readString();
+        height = in.readInt();
+        weight = in.readInt();
+        stat0 = in.readInt();
+        stat1 = in.readInt();
+        stat2 = in.readInt();
+        stat3 = in.readInt();
+        stat4 = in.readInt();
+        stat5 = in.readInt();
+        ability = in.readString();
+        generation = in.readString();
+        strain = in.readString();
+        sprites = in.createStringArrayList();
+        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        image = in.readInt();
+        url = in.readString();
+        fav = in.readByte() != 0;
+    }
+
+    public static final Creator<Pokemon> CREATOR = new Creator<Pokemon>() {
+        @Override
+        public Pokemon createFromParcel(Parcel in) {
+            return new Pokemon(in);
+        }
+
+        @Override
+        public Pokemon[] newArray(int size) {
+            return new Pokemon[size];
+        }
+    };
 
     public boolean isFav() {
         return fav;
@@ -320,6 +358,36 @@ public class Pokemon {
 
     public Object getAverageColor() {
         return null;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(name);
+        parcel.writeString(id);
+        parcel.writeString(type1);
+        parcel.writeString(type2);
+        parcel.writeString(xp);
+        parcel.writeInt(height);
+        parcel.writeInt(weight);
+        parcel.writeInt(stat0);
+        parcel.writeInt(stat1);
+        parcel.writeInt(stat2);
+        parcel.writeInt(stat3);
+        parcel.writeInt(stat4);
+        parcel.writeInt(stat5);
+        parcel.writeString(ability);
+        parcel.writeString(generation);
+        parcel.writeString(strain);
+        parcel.writeStringList(sprites);
+        parcel.writeParcelable(bitmap, i);
+        parcel.writeInt(image);
+        parcel.writeString(url);
+        parcel.writeByte((byte) (fav ? 1 : 0));
     }
 }
 
