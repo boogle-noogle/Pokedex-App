@@ -125,7 +125,7 @@ public class CompareView extends AppCompatActivity {
         YAxis yAxis = chart.getYAxis();
         yAxis.setLabelCount(NB_QUALITIES,false);
         yAxis.setTextSize(9f);
-        yAxis.setAxisMinimum(min);
+        yAxis.setAxisMinimum(1f);
         yAxis.setAxisMaximum(max);
         yAxis.setDrawLabels(false);
 
@@ -171,6 +171,10 @@ public class CompareView extends AppCompatActivity {
         chartList2.add( new RadarEntry(pokemon2.getStat3()));
         chartList2.add( new RadarEntry(pokemon2.getStat4()));
         chartList2.add( new RadarEntry(pokemon2.getStat5()));
+
+        int max1 = pokemon1.getStat0() +pokemon1.getStat1() +pokemon1.getStat2() +pokemon1.getStat3() +pokemon1.getStat4() +pokemon1.getStat5();
+        int max2 = pokemon2.getStat0() +pokemon2.getStat1() +pokemon2.getStat2() +pokemon2.getStat3() +pokemon2.getStat4() +pokemon2.getStat5();
+
 
         RadarDataSet set1 = new RadarDataSet(chartList1, null);
         set1.setColor(Color.GREEN);

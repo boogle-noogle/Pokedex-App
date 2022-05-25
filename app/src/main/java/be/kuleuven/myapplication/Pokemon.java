@@ -105,8 +105,8 @@ public class Pokemon implements Parcelable {
         this.bitmap = bitmap;
     }
 
-    public Pokemon(String name, String id, int height, int weight, int stat0, int stat1, int stat2, int stat3, int stat4, int stat5,
-                   Bitmap bitmap) {
+
+    public Pokemon(String name, String id, int height, int weight, int stat0, int stat1, int stat2, int stat3, int stat4, int stat5, String url) {
         this.name = name;
         this.id = id;
         this.height = height;
@@ -117,59 +117,13 @@ public class Pokemon implements Parcelable {
         this.stat3 = stat3;
         this.stat4 = stat4;
         this.stat5 = stat5;
-        this.bitmap = bitmap;
-    }
+        this.url=url;
 //        this.drawable = drawable;
-//        image =  new DownloadImage(image).execute(url);
-
-    public Pokemon(String name, String id, int height, int weight, int stat0, int stat1, int stat2, int stat3, int stat4, int stat5) {
-        this.name = name;
-        this.id = id;
-        this.height = height;
-        this.weight = weight;
-        this.stat0 = stat0;
-        this.stat1 = stat1;
-        this.stat2 = stat2;
-        this.stat3 = stat3;
-        this.stat4 = stat4;
-        this.stat5 = stat5;
-//        this.drawable = drawable;
-//        image =  new DownloadImage(image).execute(url);
+    }
+    public int getStatTotal(){
+        return stat0+stat1+stat2+stat3+stat4+stat5;
     }
 
-    public Pokemon(String name, String id, int height, int weight, int stat0, int stat1, int stat2, int stat3, int stat4, int stat5,
-                   String url, Drawable drawable) {
-        this.name = name;
-        this.id = id;
-        this.height = height;
-        this.weight = weight;
-        this.stat0 = stat0;
-        this.stat1 = stat1;
-        this.stat2 = stat2;
-        this.stat3 = stat3;
-        this.stat4 = stat4;
-        this.stat5 = stat5;
-        this.url = url;
-        this.drawable = drawable;
-//        image =  new DownloadImage(image).execute(url);
-    }
-
-    public Pokemon(String name, String id, int image) {
-        this.name = name;
-        this.id = id;
-        this.image = image;
-    }
-
-    public Pokemon(String name, String id, Bitmap bitmap) {
-        this.name = name;
-        this.id = id;
-        this.bitmap = bitmap;
-    }
-
-    public Pokemon(String name, String id) {
-        this.name = name;
-        this.id = id;
-    }
 
     public static Bitmap downloadImage(String url) {
         Bitmap bitmap = null;
@@ -388,30 +342,5 @@ public class Pokemon implements Parcelable {
         parcel.writeInt(image);
         parcel.writeString(url);
         parcel.writeByte((byte) (fav ? 1 : 0));
-    }
-}
-
-class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-    ImageView bmImage;
-
-    public DownloadImage(ImageView bmImage) {
-        this.bmImage = (ImageView) bmImage;
-    }
-
-    protected Bitmap doInBackground(String... urls) {
-        String urldisplay = urls[0];
-        Bitmap mIcon11 = null;
-        try {
-            InputStream in = new java.net.URL(urldisplay).openStream();
-            mIcon11 = BitmapFactory.decodeStream(in);
-        } catch (Exception e) {
-            Log.d("Error", e.getStackTrace().toString());
-
-        }
-        return mIcon11;
-    }
-
-    protected void onPostExecute(Bitmap result) {
-        bmImage.setImageBitmap(result);
     }
 }

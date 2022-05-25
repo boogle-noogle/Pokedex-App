@@ -36,4 +36,14 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="sort_alphabetically">Sort Alphabetically</string>
+    <string name="sort_by_number">Sort by Number</string>
+    <string name="search">Search</string>
+    <string name="sort_by_stat">Sort by Stat</string>
+    <string name="sort_by_total">Sort by Total</string>
+    <string name="sort_by_speed">Sort by Speed</string>
+    <string name="sort_by_defense">Sort by Defense</string>
+    <string name="sort_by_attack">Sort by Attack</string>
+    <string name="sort_by_hp">Sort by HP</string>
+    <string name="invert_list">Invert List</string>
 </resources>

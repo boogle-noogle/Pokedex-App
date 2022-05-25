@@ -7,6 +7,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerViewAdapter2 extends RecyclerViewAdapter{
@@ -20,6 +21,7 @@ public class RecyclerViewAdapter2 extends RecyclerViewAdapter{
         holder.profileImage.setImageBitmap(list.get(holder.getAdapterPosition()).getBitmap());
         holder.name.setText(list.get(holder.getAdapterPosition()).getName());
         holder.number.setText(list.get(holder.getAdapterPosition()).getNumber());
+        holder.fav.setBackgroundResource(R.drawable.ic_favorite);
 
         holder.fav.setOnClickListener(view -> {
             list.remove(holder.getAdapterPosition());
@@ -76,4 +78,5 @@ public class RecyclerViewAdapter2 extends RecyclerViewAdapter{
 
 
     }
+
 }

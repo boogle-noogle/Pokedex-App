@@ -1,9 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<item android:id="@+id/search"
-    android:title="Search"
-    android:icon="@drawable/ic_search"
-    app:showAsAction="always"
-    app:actionViewClass="android.widget.SearchView" />
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/sortByNumber"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/sort_by_number"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sortAlphabetically"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/sort_alphabetically"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/sort2"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/sort_by_stat"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="never">
+
+        <menu>
+            <item
+                android:id="@+id/sortByHP"
+                android:title="@string/sort_by_hp"
+                app:actionViewClass="android.widget.SearchView"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/sortByAttack"
+                android:title="@string/sort_by_attack"
+                app:actionViewClass="android.widget.SearchView"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/sortByDefense"
+                android:title="@string/sort_by_defense"
+                app:actionViewClass="android.widget.SearchView"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/sortBySpeed"
+                android:title="@string/sort_by_speed"
+                app:actionViewClass="android.widget.SearchView"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/sortByTotal"
+                android:title="@string/sort_by_total"
+                app:actionViewClass="android.widget.SearchView"
+                app:showAsAction="never" />
+
+        </menu>
+    </item>
+    <item
+        android:id="@+id/invert"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/invert_list"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="never"
+        />
 </menu>

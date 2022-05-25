@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ public class ViewActivity extends AppCompatActivity {
     TextView Name,Number;
     TextView stat00,stat10,stat20,stat30,stat40,stat50;
     TextView weight0,height0;
+    byte[] byteArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,7 @@ public class ViewActivity extends AppCompatActivity {
         int image = getIntent().getIntExtra("image", 1);
 
         Bitmap bitmap = (Bitmap) getIntent().getParcelableExtra("BitmapImage");
-        byte[] byteArray = getIntent().getByteArrayExtra("newImage");
+        byteArray = getIntent().getByteArrayExtra("newImage");
 
         String name = getIntent().getStringExtra("name");
         String number = getIntent().getStringExtra("number");
@@ -47,9 +49,11 @@ public class ViewActivity extends AppCompatActivity {
         int stat5= getIntent().getIntExtra("stat5",1);
         int height= getIntent().getIntExtra("height",1);
         int weight= getIntent().getIntExtra("weight",1);
+        String url = getIntent().getStringExtra("url");
 
 
-        imageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray,0,byteArray.length));
+        //imageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray,0,byteArray.length));
+        new AsyncGettingBitmapFromUrl().execute(url);
         Name.setText(name);
         Number.setText(number);
         stat00.setText("    " + String.valueOf(stat0)+ "    ");
@@ -61,6 +65,31 @@ public class ViewActivity extends AppCompatActivity {
         height0.setText("    " + String.valueOf(height)+ "    ");
         weight0.setText("    " + String.valueOf(weight)+ "    ");
 
+
+    }
+    private class AsyncGettingBitmapFromUrl extends AsyncTask<String, Void, Bitmap> {
+
+        int id;
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+
+            System.out.println("doInBackground");
+
+            Bitmap bitmap = null;
+            bitmap = Pokemon.downloadImage(params[0]);
+
+            return bitmap;
+        }
+
+        //@Override
+        protected void onPostExecute(Bitmap bitmap) {
+            imageView.setImageBitmap(bitmap);
+            //imageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray,0,byteArray.length));
+
+
+
+        }
 
     }
 }

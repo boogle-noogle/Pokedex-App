@@ -2,6 +2,7 @@ package be.kuleuven.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +13,12 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -25,9 +28,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     Context context;
     List<Pokemon> list;
     List<Pokemon> listFull;
-    List<Pokemon> favList;
+    ArrayList<Pokemon> favList;
     List<Pokemon> compList;
     int count = 0;
+    int pos=0;
+    Comparator<Pokemon> comparator;
+
 
 
     public RecyclerViewAdapter(Context context, List<Pokemon> list) {
@@ -46,9 +52,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     //database is 106
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.MyViewHolder holder, int position) {
         //holder.profileImage.setImageResource(list.get(holder.getAdapterPosition()).getImage());
+        holder.compare.setBackgroundResource(R.drawable.ic_uncompare);
         holder.profileImage.setImageBitmap(list.get(holder.getAdapterPosition()).getBitmap());
         holder.name.setText(list.get(holder.getAdapterPosition()).getName());
         holder.number.setText(list.get(holder.getAdapterPosition()).getNumber());
@@ -78,7 +86,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             Pokemon current = list.get(holder.getAdapterPosition());
 
             if(compList.size()==1 && !compList.contains(current)){
+                holder.compare.setBackgroundResource(R.drawable.ic_compare);
                 compList.add(current);
+                comparator = new Comparator<Pokemon>() {
+                    @Override
+                    public int compare(Pokemon pokemon, Pokemon t1) {
+                        if (pokemon.getStatTotal() > t1.getStatTotal()) {
+                            return -1;
+                        } else if (pokemon.getStatTotal() < t1.getStatTotal()) {
+                            return 1;
+                        }
+                        return 0;
+                    }
+                };
+                compList.sort(comparator);
                 Pokemon first = compList.get(0);
                 Pokemon second = compList.get(1);
                 Intent intent = new Intent(context, CompareView.class);
@@ -86,6 +107,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 intent.putExtra("pokemon2", second);
                 compList.clear();
                 context.startActivity(intent);
+                this.notifyItemChanged(pos);
             }else{
                 if(compList.contains(current)){
                     compList.remove(current);
@@ -93,6 +115,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                 }else{
                     compList.add(current);
+                    pos = holder.getAdapterPosition();
                     holder.compare.setBackgroundResource(R.drawable.ic_check);
                 }
             }
@@ -117,6 +140,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 intent.putExtra("weight", list.get(holder.getAdapterPosition()).getWeight());
                 intent.putExtra("height", list.get(holder.getAdapterPosition()).getHeight());
                 intent.putExtra("color", (Parcelable) list.get(holder.getAdapterPosition()).getAverageColor());
+                intent.putExtra("url",list.get(holder.getAdapterPosition()).getUrl());
 
 
                 context.startActivity(intent);
@@ -126,9 +150,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     }
 
-    public void clearCompList() {
-        compList.clear();
-    }
 
     public List<Pokemon> getFavList() {
         return favList;
