@@ -2,6 +2,7 @@ package be.kuleuven.myapplication;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Parcel;
@@ -36,6 +37,11 @@ public class Pokemon implements Parcelable {
     private int image;
     private String url;
     private boolean fav;
+    Color color;
+
+    public int getID(){
+        return Integer.parseInt(getNumber().substring(1))-1;
+    }
 
     protected Pokemon(Parcel in) {
         name = in.readString();

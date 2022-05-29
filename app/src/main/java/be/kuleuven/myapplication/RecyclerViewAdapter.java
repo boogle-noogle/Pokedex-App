@@ -2,8 +2,10 @@ package be.kuleuven.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+import android.telephony.TelephonyManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -31,9 +35,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     ArrayList<Pokemon> favList;
     List<Pokemon> compList;
     int count = 0;
-    int pos=0;
+    int pos = 0;
     Comparator<Pokemon> comparator;
-
+    TelephonyManager telephonyManager;
 
 
     public RecyclerViewAdapter(Context context, List<Pokemon> list) {
@@ -51,16 +55,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return new MyViewHolder(view);
     }
 
-    //database is 106
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.MyViewHolder holder, int position) {
         //holder.profileImage.setImageResource(list.get(holder.getAdapterPosition()).getImage());
-        holder.compare.setBackgroundResource(R.drawable.ic_uncompare);
+        if (compList.contains(list.get(holder.getAdapterPosition()))) {
+            holder.compare.setBackgroundResource(R.drawable.ic_check);
+        } else{
+            holder.compare.setBackgroundResource(R.drawable.ic_compare);
+        }
         holder.profileImage.setImageBitmap(list.get(holder.getAdapterPosition()).getBitmap());
         holder.name.setText(list.get(holder.getAdapterPosition()).getName());
         holder.number.setText(list.get(holder.getAdapterPosition()).getNumber());
-
+        if (list.get(holder.getAdapterPosition()).isFav()) {
+            holder.fav.setBackgroundResource(R.drawable.ic_favorite);
+        } else {
+            holder.fav.setBackgroundResource(R.drawable.ic_unfavorite);
+        }
         holder.fav.setOnClickListener(view -> {
             Pokemon current = list.get(holder.getAdapterPosition());
             if (current.isFav()) {
@@ -76,16 +88,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     current.setFav(true);
                 }
                 favList.add(current);
-                System.out.println(current.getName() + " added");
+                //System.out.println(current.getName() + " added");
                 holder.fav.setBackgroundResource(R.drawable.ic_favorite);
-
             }
 
         });
         holder.compare.setOnClickListener(view -> {
             Pokemon current = list.get(holder.getAdapterPosition());
 
-            if(compList.size()==1 && !compList.contains(current)){
+            if (compList.size() == 1 && !compList.contains(current)) {
                 holder.compare.setBackgroundResource(R.drawable.ic_compare);
                 compList.add(current);
                 comparator = new Comparator<Pokemon>() {
@@ -108,12 +119,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 compList.clear();
                 context.startActivity(intent);
                 this.notifyItemChanged(pos);
-            }else{
-                if(compList.contains(current)){
+            } else {
+                if (compList.contains(current)) {
                     compList.remove(current);
                     holder.compare.setBackgroundResource(R.drawable.ic_compare);
 
-                }else{
+                } else {
                     compList.add(current);
                     pos = holder.getAdapterPosition();
                     holder.compare.setBackgroundResource(R.drawable.ic_check);
@@ -140,7 +151,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 intent.putExtra("weight", list.get(holder.getAdapterPosition()).getWeight());
                 intent.putExtra("height", list.get(holder.getAdapterPosition()).getHeight());
                 intent.putExtra("color", (Parcelable) list.get(holder.getAdapterPosition()).getAverageColor());
-                intent.putExtra("url",list.get(holder.getAdapterPosition()).getUrl());
+                intent.putExtra("url", list.get(holder.getAdapterPosition()).getUrl());
 
 
                 context.startActivity(intent);

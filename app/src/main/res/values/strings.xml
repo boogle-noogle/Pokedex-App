@@ -46,4 +46,7 @@
     <string name="sort_by_attack">Sort by Attack</string>
     <string name="sort_by_hp">Sort by HP</string>
     <string name="invert_list">Invert List</string>
+    <string name="jump_to_top">Jump to Top</string>
+    <string name="Error">CONNECTION ERROR: Try again</string>
+    <string name="Success">Success!</string>
 </resources>

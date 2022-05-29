@@ -6,9 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,14 +19,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -33,11 +36,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -45,14 +48,17 @@ public class MainActivity extends AppCompatActivity {
     List<Pokemon> testList = new ArrayList<>();
     List<Pokemon> list = new ArrayList<>(30);
     RequestQueue requestQueue;
-    RecyclerView recyclerView, recyclerView2;
+    RecyclerView recyclerView;
     RecyclerViewAdapter adapter;
-    Bitmap bitmap = null;
     List<String> urls = new LinkedList<>();
     List<Bitmap> bitmaps = new ArrayList<>();
     List<Pokemon> favPokemon = new ArrayList<>();
+    List<Pokemon> dbList = new ArrayList<>();
     Comparator<Pokemon> comparator;
     int pokemonCounter = 0;
+    String likedRaw;
+    String localID;
+    int numberOfPokemon = 31;
 
     Button button;
 
@@ -62,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
+        localID = id(this);
         sendRequest(1);
     }
 
@@ -108,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
                 };
                 list.sort(comparator);
                 adapter.notifyDataSetChanged();
+
+                System.out.println(favPokemon.size());
+
                 break;
 
 
@@ -203,13 +211,55 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 break;
 
+            case R.id.jumpToStart:
+                recyclerView.setAdapter(adapter);
+                break;
+            case R.id.save:
+                String liked = "";
+                favPokemon = adapter.getFavList();
+                //favPokemon.addAll(tempList);
+                for (Pokemon pokemon : dbList) {
+                    if (!favPokemon.contains(pokemon) && pokemon.isFav()) {
+                        favPokemon.add(pokemon);
+                    }
+                }
+                for (Pokemon pokemon : favPokemon) {
+                    liked += Integer.parseInt(pokemon.getNumber().substring(1)) - 1 + "_";
+                }
+                System.out.println(liked);
+                requestQueue = Volley.newRequestQueue(this);
+
+                String requestURL = "https://studev.groept.be/api/a21pt106/updateData/" + liked + "/" + localID;
+                StringRequest submitRequest = new StringRequest(Request.Method.GET, requestURL,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.d("Database", "response received");
+                                System.out.println(requestURL);
+                                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.Success), Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        },
+
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.Error), Toast.LENGTH_LONG);
+                                toast.show();
+
+
+                            }
+                        }
+
+                );
+                requestQueue.add(submitRequest);
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void sendRequest(int i) {
         //max value is 899
-        if (i < 21) {
+        if (i < numberOfPokemon) {
             requestQueue = Volley.newRequestQueue(this);
             String requestURL2 = "https://pokeapi.co/api/v2/pokemon/" + i;
 
@@ -248,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
                         pokemonCounter++;
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        list.addAll(testList);
+                        //list.addAll(testList);
                     }
                     //new AsyncGettingBitmapFromUrl().doInBackground(urls.get(i-1));
                     sendRequest(i + 1);
@@ -267,23 +317,102 @@ public class MainActivity extends AppCompatActivity {
 
 
             requestQueue.add(jsonArrayRequest);
-            Log.d("Database", "request sent "+ pokemonCounter);
+            Log.d("Database", "request sent " + pokemonCounter);
 
             //}
         } else {
+            getLiked();
             adapter = new RecyclerViewAdapter(this, list);
             new AsyncGettingBitmapFromUrl().execute(urls.toArray(new String[0]));
             recyclerView.setAdapter(adapter);
         }
     }
 
+    public void setFavPokemon(List<Pokemon> list) {
+        favPokemon = list;
+    }
+
     public void toFav(View view) {
         favPokemon = adapter.getFavList();
+        //favPokemon.addAll(tempList);
+        for (Pokemon pokemon : dbList) {
+            if (!favPokemon.contains(pokemon) && pokemon.isFav()) {
+                favPokemon.add(pokemon);
+            }
+        }
 
         Intent intent = new Intent(this, FavActivity.class);
 
         intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) favPokemon);
         this.startActivity(intent);
+    }
+
+    public synchronized static String id(Context context) {
+        String uniqueID = null;
+        String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+        SharedPreferences sharedPrefs = context.getSharedPreferences(PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+        uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
+        if (uniqueID == null) {
+            uniqueID = UUID.randomUUID().toString();
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor.putString(PREF_UNIQUE_ID, uniqueID);
+            editor.commit();
+        }
+        return uniqueID;
+    }
+
+    public void getLiked() {
+        requestQueue = Volley.newRequestQueue(this);
+        String url = "https://studev.groept.be/api/a21pt106/service1";
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                for (int i = 0; i < response.length(); i++) {
+
+                    try {
+                        JSONObject jsonObject = response.getJSONObject(i);
+
+                        if (localID.equals(jsonObject.getString("deviceID"))) {
+                            likedRaw = jsonObject.getString("list");
+                            String[] splitArray = likedRaw.split("_");
+                            int[] likedNew = new int[splitArray.length];
+
+                            for (int var = 0; var < likedNew.length; var++) {
+                                likedNew[var] = Integer.parseInt(splitArray[var]);
+                            }
+                            for (int k : likedNew) {
+
+                                for (int j = 0; j < list.size(); j++) {
+                                    if (list.get(j).getID() == k && !favPokemon.contains(list.get(j))) {
+                                        dbList.add(list.get(j));
+                                        list.get(j).setFav(true);
+                                    }
+                                }
+
+
+                                for (Pokemon pokemon : list) {
+                                    if (pokemon.getID() == k) {
+                                        favPokemon.add(pokemon);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                Log.i("Volley Error: ", error);
+            }
+        });
+
+        requestQueue.add(jsonArrayRequest);
+
     }
 
     private class AsyncGettingBitmapFromUrl extends AsyncTask<String, Void, Void> {
@@ -310,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
 
             for (int i = 0; i < params.length; i++) {
                 list.get(i).setBitmap(Pokemon.downloadImage(params[i]));
-                System.out.println("bitmap" + bitmap);
+                System.out.println("bitmap" + i);
             }
             return null;
         }
