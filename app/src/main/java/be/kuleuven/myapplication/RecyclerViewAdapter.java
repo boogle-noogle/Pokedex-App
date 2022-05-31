@@ -17,6 +17,7 @@ import android.telephony.TelephonyManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -37,8 +38,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     int count = 0;
     int pos = 0;
     Comparator<Pokemon> comparator;
-    TelephonyManager telephonyManager;
-
 
     public RecyclerViewAdapter(Context context, List<Pokemon> list) {
         this.context = context;
@@ -217,12 +216,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             profileImage = itemView.findViewById(R.id.profileImage);
             name = itemView.findViewById(R.id.textView);
             number = itemView.findViewById(R.id.textView2);
-            stat0 = itemView.findViewById(R.id.stat0);
-            stat1 = itemView.findViewById(R.id.stat1);
-            stat2 = itemView.findViewById(R.id.stat2);
-            stat3 = itemView.findViewById(R.id.stat3);
-            stat4 = itemView.findViewById(R.id.stat4);
-            stat5 = itemView.findViewById(R.id.stat5);
+
             weight = itemView.findViewById(R.id.weight1);
             height = itemView.findViewById(R.id.height1);
             fav = itemView.findViewById(R.id.favorite);
