@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     String likedRaw;
     String localID;
     int numberOfPokemon = 31;
+    boolean flag = false;
+    String liked = "";
 
     Button button;
 
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         localID = id(this);
+        //localID = "yetAnotherID";
         sendRequest(1);
     }
 
@@ -213,9 +216,11 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.jumpToStart:
                 recyclerView.setAdapter(adapter);
+                Toast toast = Toast.makeText(this, localID, Toast.LENGTH_LONG);
+                toast.show();
                 break;
             case R.id.save:
-                String liked = "";
+                liked = "";
                 favPokemon = adapter.getFavList();
                 //favPokemon.addAll(tempList);
                 for (Pokemon pokemon : dbList) {
@@ -226,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
                 for (Pokemon pokemon : favPokemon) {
                     liked += Integer.parseInt(pokemon.getNumber().substring(1)) - 1 + "_";
                 }
-                System.out.println(liked);
                 requestQueue = Volley.newRequestQueue(this);
 
                 String requestURL = "https://studev.groept.be/api/a21pt106/updateData/" + liked + "/" + localID;
@@ -253,6 +257,20 @@ public class MainActivity extends AppCompatActivity {
 
                 );
                 requestQueue.add(submitRequest);
+                break;
+            case R.id.heart:
+                favPokemon = adapter.getFavList();
+                //favPokemon.addAll(tempList);
+                for (Pokemon pokemon : dbList) {
+                    if (!favPokemon.contains(pokemon) && pokemon.isFav()) {
+                        favPokemon.add(pokemon);
+                    }
+                }
+
+                Intent intent = new Intent(this, FavActivity.class);
+
+                intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) favPokemon);
+                this.startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -328,25 +346,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setFavPokemon(List<Pokemon> list) {
-        favPokemon = list;
-    }
-
-    public void toFav(View view) {
-        favPokemon = adapter.getFavList();
-        //favPokemon.addAll(tempList);
-        for (Pokemon pokemon : dbList) {
-            if (!favPokemon.contains(pokemon) && pokemon.isFav()) {
-                favPokemon.add(pokemon);
-            }
-        }
-
-        Intent intent = new Intent(this, FavActivity.class);
-
-        intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) favPokemon);
-        this.startActivity(intent);
-    }
-
     public synchronized static String id(Context context) {
         String uniqueID = null;
         String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
@@ -361,20 +360,63 @@ public class MainActivity extends AppCompatActivity {
         return uniqueID;
     }
 
+    public void newDevice() {
+        requestQueue = Volley.newRequestQueue(this);
+        liked = "";
+        favPokemon = adapter.getFavList();
+        //favPokemon.addAll(tempList);
+        for (Pokemon pokemon : dbList) {
+            if (!favPokemon.contains(pokemon) && pokemon.isFav()) {
+                favPokemon.add(pokemon);
+            }
+        }
+        for (Pokemon pokemon : favPokemon) {
+            liked += Integer.parseInt(pokemon.getNumber().substring(1)) - 1 + "_";
+        }
+        String url = "https://studev.groept.be/api/a21pt106/newDevice/" + localID + "/" + liked;
+        StringRequest submitRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast toast = Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.Error), Toast.LENGTH_LONG);
+                        toast.show();
+
+                    }
+                }
+
+        );
+        requestQueue.add(submitRequest);
+
+    }
+
     public void getLiked() {
         requestQueue = Volley.newRequestQueue(this);
-        String url = "https://studev.groept.be/api/a21pt106/service1";
+        String url = "https://studev.groept.be/api/a21pt106/service1/" + localID;
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
-                for (int i = 0; i < response.length(); i++) {
+                try {
+                    if (response.length() != 0) {
+                        JSONObject jsonObject = response.getJSONObject(0);
 
-                    try {
-                        JSONObject jsonObject = response.getJSONObject(i);
+                        Toast toast = Toast.makeText(getApplicationContext(), "not null", Toast.LENGTH_LONG);
+                        toast.show();
 
                         if (localID.equals(jsonObject.getString("deviceID"))) {
                             likedRaw = jsonObject.getString("list");
+
+                            toast = Toast.makeText(getApplicationContext(), likedRaw, Toast.LENGTH_LONG);
+                            toast.show();
+                            //likedRaw="1_2_4_5_";
                             String[] splitArray = likedRaw.split("_");
                             int[] likedNew = new int[splitArray.length];
 
@@ -397,12 +439,18 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
+                            flag = false;
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    } else {
 
+                        Toast toast = Toast.makeText(getApplicationContext(), "not null", Toast.LENGTH_LONG);
+                        toast.show();
+                        newDevice();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+
             }
         }, new Response.ErrorListener() {
             @Override

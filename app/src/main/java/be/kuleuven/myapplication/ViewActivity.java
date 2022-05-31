@@ -42,6 +42,7 @@ public class ViewActivity extends AppCompatActivity {
     CircleImageView imageView;
     TextView Name, Number;
     TextView weight0, height0;
+    TextView text0,text2,text1,text3,text4,text5;
     byte[] byteArray;
     float[] stats;
     BootstrapProgressBar bar0, bar1, bar2, bar3, bar4, bar5;
@@ -73,6 +74,12 @@ public class ViewActivity extends AppCompatActivity {
         bar3 = findViewById(R.id.bar3);
         bar4 = findViewById(R.id.bar4);
         bar5 = findViewById(R.id.bar5);
+        text0=findViewById(R.id.text0);
+        text1=findViewById(R.id.text1);
+        text2=findViewById(R.id.text20);
+        text3=findViewById(R.id.text3);
+        text4=findViewById(R.id.text4);
+        text5=findViewById(R.id.text5);
         Number = findViewById(R.id.number1);
         weight0 = findViewById(R.id.weight1);
         height0 = findViewById(R.id.height1);
@@ -100,6 +107,13 @@ public class ViewActivity extends AppCompatActivity {
         bar3.setProgress(stat3);
         bar4.setProgress(stat4);
         bar5.setProgress(stat5);
+
+        text0.setText(String.valueOf(stat0));
+        text1.setText(String.valueOf(stat1));
+        text2.setText(String.valueOf(stat2));
+        text3.setText(String.valueOf(stat3));
+        text4.setText(String.valueOf(stat4));
+        text5.setText(String.valueOf(stat5));
 
         //imageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray,0,byteArray.length));
         new AsyncGettingBitmapFromUrl().execute(url);
