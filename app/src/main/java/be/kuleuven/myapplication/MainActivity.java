@@ -414,9 +414,6 @@ public class MainActivity extends AppCompatActivity {
                         if (localID.equals(jsonObject.getString("deviceID"))) {
                             likedRaw = jsonObject.getString("list");
 
-                            toast = Toast.makeText(getApplicationContext(), likedRaw, Toast.LENGTH_LONG);
-                            toast.show();
-                            //likedRaw="1_2_4_5_";
                             String[] splitArray = likedRaw.split("_");
                             int[] likedNew = new int[splitArray.length];
 
